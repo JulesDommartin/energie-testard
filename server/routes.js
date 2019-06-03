@@ -11,16 +11,9 @@ const userController  = require('./entities/user/controller');
 var userCtrl = new userController(mongoose);
 
 module.exports = function(app, db) {
-
-  if (process.env.NAME != "production" && process.env.NAME != "development") {
-    logger.info("- local environment -");
-    logger.info("setting up static files");
-    app.use('/',                  express.static(path.join(__dirname, '../../greenhouse-app/dist')));
-  } else {
     app.get('/', (req, res, next) => {
-      return res.status(200).send("OK");
-    })
-  }
+        return res.status(200).send("OK");
+    });
 
   app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -181,12 +174,14 @@ module.exports = function(app, db) {
 
   const Main = require('./entities/main.router');
   const Public = require('./entities/public.router');
+  const Fixture = require('./fixtures/fixtures');
 
   const main = new Main(mongoose);
   const publicR = new Public(mongoose);
 
   app.use('/api', app.oauth.authorise(), main.router);
   app.use('/public', publicR.router);
+  app.use('/fixture', Fixture);
 
 
 }

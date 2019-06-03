@@ -1,5 +1,5 @@
 {
-  "name": "greenhouse-server",
+  "name": "energie-server",
   "version": "0.0.1",
   "main": "server/server.js",
   "scripts": {
@@ -10,6 +10,7 @@
   "dependencies": {
     "@sendgrid/mail": "^6.3.1",
     "body-parser": "^1.18.3",
+    "csv-parser": "^2.3.0",
     "express": "^4.16.4",
     "fb": "^2.0.0",
     "http": "0.0.0",

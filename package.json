@@ -13,7 +13,6 @@
     "express": "^4.16.4",
     "fb": "^2.0.0",
     "http": "0.0.0",
-    "influx": "^5.0.7",
     "moment": "^2.24.0",
     "mongoose": "^4.13.18",
     "node-oauth2-server": "^2.4.0",

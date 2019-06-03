@@ -9,6 +9,4 @@ app.use('/', api);
 
 http.createServer(app).listen(env.port, function () {
     console.log(`Listening on port ${env.port}`)
-
-
 });

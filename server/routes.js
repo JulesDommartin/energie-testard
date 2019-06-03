@@ -7,7 +7,6 @@ const config          = require('./config');
 const request         = require('request');
 const path            = require('path');
 const userController  = require('./entities/user/controller');
-const extractor       = require('./services/extractor');
 
 var userCtrl = new userController(mongoose);
 
@@ -178,18 +177,6 @@ module.exports = function(app, db) {
 
   app.use('/public', (req, res, next) => {
     next();
-  });
-
-  app.post('/public/extract', (req, res, next) => {
-    logger.info("POST : " + req.originalUrl);
-    if (!req.body.houseId) {
-      return res.status(400).send({
-        code: 400,
-        message: "No house id provided"
-      });
-    }
-    const houseId = req.body.houseId;
-    extractor.extract(houseId);
   });
 
   const Main = require('./entities/main.router');

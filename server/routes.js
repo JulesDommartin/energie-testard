@@ -7,6 +7,7 @@ const config          = require('./config');
 const request         = require('request');
 const path            = require('path');
 const userController  = require('./entities/user/controller');
+const extractor       = require('./services/extractor');
 
 var userCtrl = new userController(mongoose);
 
@@ -179,24 +180,16 @@ module.exports = function(app, db) {
     next();
   });
 
-  const Email = require('./services/sendgrid');
-
-  app.post('/email', (req, res, next) => {
-    var conf = {
-      apiKey: config.sendgrid.apiKey
-    };
-    let email = new Email(conf);
-    if (req.body) {
-      var body = req.body;
-      if (body.from && body.to && body.subject && body.text && body.html) {
-        email.sendEmail(body, (err, results) => {
-          if (err) return res.status(500).send({code: 500, message : err});
-          return res.status(200).send({code: 200, message: "Mail sent !"});
-        });
-      } else {
-        return res.status(400).send({code: 400, message: "Missing fields for sending a mail"});
-      }
+  app.post('/public/extract', (req, res, next) => {
+    logger.info("POST : " + req.originalUrl);
+    if (!req.body.houseId) {
+      return res.status(400).send({
+        code: 400,
+        message: "No house id provided"
+      });
     }
+    const houseId = req.body.houseId;
+    extractor.extract(houseId);
   });
 
   const Main = require('./entities/main.router');

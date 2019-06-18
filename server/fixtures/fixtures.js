@@ -15,6 +15,18 @@ router.get('/populate', async function (req, res, next) {
             const houses_map = new Map();
             const appliances = new Map();
             files.forEach((f) => {
+                if(f.indexOf('appliances.json') > -1) {
+                    fs.readFile(path + f, (err, res) => {
+                        if (err) {
+                            console.error(err);
+                        } else {
+                            const appliancesData = JSON.parse(res);
+                            appliancesData.forEach(appliance => {
+                                appliances.set(appliance.id, appliance.appliances);
+                            });
+                        }
+                    });
+                }
                 if(f.indexOf('values') > -1) {
                     const house_id = f.split('-')[0];
                     fs.createReadStream(path + f)
@@ -31,17 +43,6 @@ router.get('/populate', async function (req, res, next) {
                             //     console.log(key);
                             //     console.log(value);
                             // })
-                        })
-                }
-                if(f.indexOf('appliances') > -1) {
-                    fs.createReadStream(path + f)
-                        .pipe(csv())
-                        .on('data', (data) => {
-                            console.log(data);
-                        })
-                        .on('end', () => {
-                            console.log('finished');
-
                         })
                 }
             })

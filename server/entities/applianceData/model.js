@@ -5,8 +5,7 @@ const _           = require('underscore');
 const BaseFields  = require('../BaseFields');
 
 const fields = _.extend(_.clone(BaseFields), {
-  houseId:        {type: mongoose.Schema.Types.ObjectId, required: true},
-  applianceName:  {type: String, required: true},
+  applianceId:    {type: mongoose.Schema.Types.ObjectId, required: true},
   time:           {type: String, required: true},
   value:          {type: Number, required: true}
 });

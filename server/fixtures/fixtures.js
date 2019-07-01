@@ -61,9 +61,13 @@ function insertNestedCollection(houses_map) {
     const promises = [];
     const ctrl = new houseNesterController(mongoose);
     houses_map.forEach((value, key, map) => {
+        // todo remove that if
         if(key === 2000903) {
             console.log("Insert "+ value.name);
-            promises.push(ctrl.insertPromise(value))
+            promises.push(ctrl.insertPromise({
+                name: Number(value.name),
+                appliance : []
+            }));
         }
     });
     Promise.all(promises).then(() => {

@@ -5,7 +5,7 @@ const _           = require('underscore');
 const BaseFields  = require('../BaseFields');
 
 const fields = _.extend(_.clone(BaseFields), {
-  name: {type: String, required: true},
+  name: {type: Number, required: true},
   appliances: [{
     name : String,
     data : [{

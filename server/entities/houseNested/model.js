@@ -10,7 +10,7 @@ const fields = _.extend(_.clone(BaseFields), {
     name : String,
     data : [{
       date : String,
-      value : Number,
+      value : String,
     }]
   }]
 });

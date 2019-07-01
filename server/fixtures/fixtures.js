@@ -5,6 +5,11 @@ const path = require('path');
 const router = express.Router();
 const moment = require('moment');
 const fixturesPath = './fixtures/';
+const mongoose = require('mongoose');
+const houseController = require('../entities/house/controller');
+const houseNesterController = require('../entities/houseNested/controller');
+const applianceController = require('../entities/applianceData/controller');
+const applianceDataController = require('../entities/appliance/controller');
 
 
 readFile = (file, houses_map) => {
@@ -22,19 +27,19 @@ readFile = (file, houses_map) => {
                             time = data[key];
                         } else {
                             let appliance = houses_map.get(house_id).appliances.find(app => app.name === key);
-                            console.log("house id : " + house_id);
-                            console.log("house : " + houses_map.get(house_id));
-                            console.log("appliance name : " + key);
-                            console.log("appliance : " + appliance);
-                            console.log("");
+                            // console.log("house id : " + house_id);
+                            // console.log("house : " + houses_map.get(house_id));
+                            // console.log("appliance name : " + key);
+                            // console.log("appliance : " + appliance);
+                            // console.log("");
                             if (appliance) {
                                 appliance.data.push({
                                     time: time,
                                     value: data[key]
                                 });
-                                console.log("appliance data", appliance.data);
+                                // console.log("appliance data", appliance.data);
                             } else {
-                                console.error("appliance does not exist");
+                                // console.error("appliance does not exist");
                             }
                         }
                     });
@@ -43,10 +48,33 @@ readFile = (file, houses_map) => {
                 }
             })
             .on('end', () => {
+                console.log("Finished " + house_id + " house!");
                 resolve("Finished " + house_id + " house!");
             });
+        } else {
+            resolve("Not a necessary file.")
         }
     });
+}
+
+function insertNestedCollection(houses_map) {
+    const promises = [];
+    const ctrl = new houseNesterController(mongoose);
+    houses_map.forEach((value, key, map) => {
+        if(key === 2000903) {
+            console.log("Insert "+ value.name);
+            promises.push(ctrl.insertPromise(value))
+        }
+    });
+    Promise.all(promises).then(() => {
+        console.log("finished");
+    }).catch((err) => {
+        console.log(err);
+    })
+}
+
+function insertRelationalCollection(houses_map) {
+
 }
 
 router.get('/populate', async function (req, res, next) {
@@ -66,9 +94,10 @@ router.get('/populate', async function (req, res, next) {
                     });
                 });
                 houses_map.set(appliance.id, {
-                    name: appliance.id,
+                    name: appliance.id.toString(),
                     appliances: appliancesArray
                 });
+
             });
             fs.readdir(fixturesPath, (err, files) => {
                 if(err) {
@@ -80,7 +109,8 @@ router.get('/populate', async function (req, res, next) {
                     });
                     Promise.all(promises)
                     .then(results => {
-                        console.log(results);
+                        insertRelationalCollection(houses_map);
+                        insertNestedCollection(houses_map);
                     })
                     .catch(err => {
                         console.error(err);
@@ -97,16 +127,6 @@ router.get('/drop', async function (req, res, next) {
 
 router.get('/all', function (req, res) {
     // todo print the number of docs (test route to know if database is populated
-});
-
-
-router.get('/nested/populate', async function (req, res, next) {
-    req.setTimeout(0);
-
-    // todo populate mongo db
-});
-router.get('/nested/drop', async function (req, res, next) {
-    // todo drop mongo db
 });
 
 router.get('/nested/all', function (req, res) {

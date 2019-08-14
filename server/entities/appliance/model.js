@@ -7,7 +7,7 @@ const BaseFields  = require('../BaseFields');
 const fields = _.extend(_.clone(BaseFields), {
   houseId:        {type: mongoose.Schema.Types.ObjectId, required: true},
   applianceName:  {type: String, required: true},
-  applianceType:  {type: String, required: true}
+  // applianceType:  {type: String, required: true}
 });
 
 const schema = new mongoose.Schema(fields);

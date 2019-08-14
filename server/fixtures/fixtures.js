@@ -8,8 +8,8 @@ const fixturesPath = './fixtures/';
 const mongoose = require('mongoose');
 const houseController = require('../entities/house/controller');
 const houseNesterController = require('../entities/houseNested/controller');
-const applianceController = require('../entities/applianceData/controller');
-const applianceDataController = require('../entities/appliance/controller');
+const applianceController = require('../entities/appliance/controller');
+const applianceDataController = require('../entities/applianceData/controller');
 
 
 readFile = (file, houses_map) => {
@@ -78,7 +78,116 @@ function insertNestedCollection(houses_map) {
 }
 
 function insertRelationalCollection(houses_map) {
+    console.log("Insert relational collections");
+    const promises = [];
+    const houseCtrl = new houseController(mongoose);
+    const applianceCtrl = new applianceController(mongoose);
+    const applianceDataCtrl = new applianceDataController(mongoose);
 
+    houses_map.forEach((value, key, map) => {
+        if(key === 2000903) {
+            console.log("Insert "+ value.name);
+            const house = {
+                name: value.name,
+                appliances: value.appliances.map(appliance => appliance.name)
+            };
+            houseCtrl.insert(house, (err, res) => {
+                if (err) {
+                    console.error(err);
+                } else {
+                    const mongooseHouseId = res._id;
+                    value.appliances.forEach(appliance => {
+                        console.log("Inserting ", mongooseHouseId, appliance.name);
+                        let relationalAppliance = {
+                            houseId: mongooseHouseId,
+                            applianceName: appliance.name,
+                        };
+                        promises.push(applianceCtrl.insertPromise(relationalAppliance));
+                    });
+                    console.log("Inserting all appliances");
+                    Promise.all(promises).then(appliancesResult => {
+                        console.log("Inserted appliances for house ", mongooseHouseId);
+                        let promisesData = [];
+                        let splittedAppliancesData = [];
+                        appliancesResult.forEach((result, i) => {
+                            // console.log(value.appliances[i]);
+                            let size = 1000;
+                            for (let index=0; index < value.appliances[i].data.length; index+=size) {
+                                splittedAppliancesData.push(value.appliances[i].data.slice(index,index+size));
+                            }
+                            console.log(splittedAppliancesData.length);
+                            splittedAppliancesData.forEach(arrayOfSplittedData => {
+                                let promises = [];
+                                arrayOfSplittedData.forEach(data => {
+                                    if (data.value) {
+                                        let applianceData = {
+                                            applianceId: result._id,
+                                            time: data.time,
+                                            value: data.value
+                                        };
+                                        promises.push(applianceDataCtrl.insertPromise(applianceData));
+                                    }
+                                });
+                                promisesData.push(promises);
+                            });
+                        });
+                        console.log(promisesData.length);
+                        this.execArrayOfArrayOfPromises(promisesData)
+                        .then(() => {
+                            console.log("finished");
+                        }).catch((err) => {
+                            console.log(err);
+                        })
+                    }).catch((err) => {
+                        console.log("test");
+                        console.log(err);
+                        
+                    })
+                }
+            })
+        }
+    });
+}
+
+function execArrayOfArrayOfPromises(promises) {
+    console.log(promises.length);
+    return new Promise((resolve,reject) => {
+        if (promises.length) {
+            let promiseArray = promises.pop();
+            Promise.all(promiseArray)
+            .then(() => {
+                execArrayOfArrayOfPromises(promises)
+                .then(() => {})
+                .catch(reject)
+            })
+            .catch(reject);
+        } else {
+            resolve();
+        }
+    });
+}
+
+function insertHouseApplianceData(key, value) {
+    return new Promise((resolve, reject) => {
+        console.log("Insert "+ value.name);
+        const promises = [];
+        const house = {
+            name: value.name,
+            appliances: value.appliances.map(appliance => appliance.name)
+        };
+        houseCtrl.insert(house, (err, res) => {
+            if (err) {
+                console.error(err);
+            } else {
+                const mongooseHouseId = res._id;
+                
+            }
+        })
+    });
+}
+
+function insertApplianceData() {
+    
 }
 
 router.get('/populate', async function (req, res, next) {

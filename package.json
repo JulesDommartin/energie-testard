@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^6.3.1",
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.20.1",
     "csv-parser": "^2.3.0",
-    "express": "^4.16.4",
+    "express": "^4.18.2",
     "fb": "^2.0.0",
     "http": "0.0.0",
     "moment": "^2.24.0",
@@ -30,13 +30,13 @@
     "chai": "^3.5.0",
     "connect-livereload": "0.5.2",
     "jasmine-core": "2.2.0",
-    "karma": "0.12.31",
+    "karma": "6.4.1",
     "karma-cli": "0.0.4",
     "karma-coverage": "0.2.7",
     "karma-jasmine": "0.3.5",
     "karma-phantomjs-launcher": "0.1.4",
     "mocha": "2.3.3",
     "run-sequence": "1.0.2",
-    "tiny-lr": "0.1.5"
+    "tiny-lr": "2.0.0"
   }
 }
